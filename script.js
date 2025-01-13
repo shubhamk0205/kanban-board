@@ -23,7 +23,7 @@ console.log(ticketsArr);
 function init() {
   if (localStorage.getItem("apptickets")) {
     ticketsArr.forEach(function (ticket) {
-      createTicket(ticket.ticketColor,ticket.ticketTask,  ticket.ticketId , ticket.ticketLock);
+      createTicket(ticket.ticketColor,ticket.ticketTask,  ticket.ticketId );
     });
   }
 }
@@ -96,71 +96,37 @@ function handleColor(ticket) {
 
 // Handle Lock to edit content
 
-// function handleLock(ticket) {
-//   const ticketLockContainer = ticket.querySelector(".ticket-lock");
-//   // console.log(ticketLockContainer);
-
-//   let ticketLock = ticketLockContainer.children[0];
-//   let taskArea = document.querySelector(".task-area");
-
-//   ticketLock.addEventListener("click", function () {
-//     let ticketIdx = ticketsArr.findIndex((t) => t.ticketId === id); 
-//     if (ticketLock.classList.contains(lockClose)) {
-//       // Lock Open
-//       ticketLock.classList.add(lockOpen);
-//       ticketLock.classList.remove(lockClose);
-//       taskArea.setAttribute("contenteditable", "true");
-//       ticketsArr[ticketIdx].ticketLock = false;
-//       // updated task should be saved in the local storage
-//     } else {
-//       // Lock Close
-//       ticketLock.classList.add(lockClose);
-//       ticketLock.classList.remove(lockOpen);
-//       taskArea.setAttribute("contenteditable", "false");
-
-//       ticketsArr[ticketIdx].ticketLock = true;
-//     }
-//     updateLocalStorage();
-//   });
-// }
-function handleLock(ticket, id) {
+function handleLock(ticket) {
   const ticketLockContainer = ticket.querySelector(".ticket-lock");
-  const ticketLockIcon = ticketLockContainer.querySelector("i"); // Correctly select the icon
-  const taskArea = ticket.querySelector(".task-area");
+  // console.log(ticketLockContainer);
 
-  ticketLockIcon.addEventListener("click", function () {
-    const ticketIdx = ticketsArr.findIndex((t) => t.ticketId === id);
+  let ticketLock = ticketLockContainer.children[0];
+  let taskArea = ticket.querySelector(".task-area");
 
-    // Toggle the lock/unlock state
-    if (ticketLockIcon.classList.contains(lockClose)) {
-      // Unlock
-      ticketLockIcon.classList.remove(lockClose);
-      ticketLockIcon.classList.add(lockOpen);
+  ticketLock.addEventListener("click", function () {
+    if (ticketLock.classList.contains(lockClose)) {
+      // Lock Open
+      ticketLock.classList.add(lockOpen);
+      ticketLock.classList.remove(lockClose);
       taskArea.setAttribute("contenteditable", "true");
-      ticketsArr[ticketIdx].ticketLock = false;
+      // updated task should be saved in the local storage
     } else {
-      // Lock
-      ticketLockIcon.classList.remove(lockOpen);
-      ticketLockIcon.classList.add(lockClose);
+      // Lock Close
+      ticketLock.classList.add(lockClose);
+      ticketLock.classList.remove(lockOpen);
       taskArea.setAttribute("contenteditable", "false");
-      ticketsArr[ticketIdx].ticketLock = true;
     }
-
-    // Update localStorage with new lock state
-    updateLocalStorage();
   });
 }
-  
-
 
 // function to create the Ticket
 
-function createTicket(taskColor, task, id ,isLocked = true) {
+function createTicket(taskColor, task, id) {
   const ticketCont = document.createElement("div");
   ticketCont.setAttribute("class", "ticket-cont");
   ticketCont.innerHTML = `<div class="ticket-color" style="background-color:${taskColor}"></div>
              <div class="ticket-id">${id}</div>
-             <div class="task-area" contenteditable="${!isLocked}" >${task}</div>
+             <div class="task-area">${task}</div>
               <div class="ticket-lock">
                 <i class="fa-solid fa-lock"></i>
               </div>`;
@@ -168,7 +134,7 @@ function createTicket(taskColor, task, id ,isLocked = true) {
   mainCont.appendChild(ticketCont);
   handleRemoval(ticketCont);
   handleColor(ticketCont);
-  handleLock(ticketCont , id);
+  handleLock(ticketCont);
 
 
 }
@@ -188,10 +154,9 @@ modalCont.addEventListener("keydown", function (e) {
     modalCont.style.display = "none";
     addBtnFlag = false;
     taskArea.value = "";
-    ticketsArr.push({ticketColor: modalTaskColor,ticketTask: task,  ticketId: id, ticketLock: true  });
-    
+    ticketsArr.push({ticketColor: modalTaskColor,ticketTask: task,  ticketId: id,   });
+    updateLocalStorage();
   }
-  updateLocalStorage();
 });
 
 // Moving Active class to respective color and selecting it
